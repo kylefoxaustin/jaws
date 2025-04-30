@@ -1,17 +1,17 @@
-# JAWS2: Memory Consumer With Memory Locking
+# JAWS: Memory Consumer With Memory Locking
 
-JAWS2 (Just Another Working Simulator) is a sophisticated memory consumption tool designed to simulate real-world application memory usage patterns. It creates and locks memory buffers in main memory to reliably consume specific percentages of system RAM while generating customizable memory access patterns.
+JAWS (Just Another Working Simulator) is a sophisticated memory consumption tool designed to simulate real-world application memory usage patterns. It creates and locks memory buffers in main memory to reliably consume specific percentages of system RAM while generating customizable memory access patterns.
 
 ## Purpose
 
-JAWS2 serves several key purposes:
+JAWS serves several key purposes:
 
 - **Hardware Testing**: Simulate memory-intensive applications for hardware validation
 - **Performance Analysis**: Test system behavior under controlled memory constraints
 - **Bandwidth Simulation**: Emulate smaller memory configurations on larger hardware (e.g., make a 64-bit DDR bus behave like a 32-bit DDR bus)
 - **Memory Locking**: Guarantee that allocated memory remains in physical RAM without swapping
 
-Unlike simple memory allocators, JAWS2 ensures memory remains resident in physical RAM through multiple locking mechanisms, active memory access patterns, and system configuration optimizations.
+Unlike simple memory allocators, JAWS ensures memory remains resident in physical RAM through multiple locking mechanisms, active memory access patterns, and system configuration optimizations.
 
 ## Features
 
@@ -45,19 +45,19 @@ pip install psutil
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/jaws2.git
-cd jaws2
+git clone https://github.com/yourusername/jaws.git
+cd jaws
 ```
 
 ### Make Scripts Executable
 
 ```bash
-chmod +x jaws2.py setup_for_jaws.sh deconstruct_jaws.sh
+chmod +x jaws.py setup_for_jaws.sh deconstruct_jaws.sh
 ```
 
 ## Usage
 
-JAWS2 requires elevated privileges to lock memory and adjust system settings. The provided setup script handles all necessary configurations.
+JAWS requires elevated privileges to lock memory and adjust system settings. The provided setup script handles all necessary configurations.
 
 ### Basic Usage
 
@@ -68,11 +68,11 @@ sudo ./setup_for_jaws.sh -mid
 This command:
 1. Creates a backup of your system settings
 2. Configures memory locking parameters
-3. Runs JAWS2 to consume 50% of system memory
+3. Runs JAWS to consume 50% of system memory
 
 ### Command Line Options
 
-JAWS2 supports the following options:
+JAWS supports the following options:
 
 #### Memory Percentage Options (Required - choose one)
 
@@ -99,18 +99,18 @@ sudo ./setup_for_jaws.sh -high -chunk=1GB -intensity=8
 sudo ./setup_for_jaws.sh -mid -static
 
 # Run directly (not recommended - skips system configurations)
-sudo ./jaws2.py -mid -chunk=512MB -intensity=7
+sudo ./jaws.py -mid -chunk=512MB -intensity=7
 ```
 
-## Understanding JAWS2 Options
+## Understanding JAWS Options
 
 ### Memory Percentage (-low, -mid, -high)
 
-These options control what percentage of your total system RAM JAWS2 will allocate and lock:
+These options control what percentage of your total system RAM JAWS will allocate and lock:
 
 - `-low`: 30% - Useful for light testing without significantly impacting system performance
 - `-mid`: 50% - Balanced option for most testing scenarios
-- `-static`: 75% - Heavy memory pressure, may impact other applications
+- `-high`: 75% - Heavy memory pressure, may impact other applications
 
 ### Chunk Size (-chunk)
 
@@ -133,7 +133,7 @@ Default: 100MB
 
 ### Intensity Level (-intensity)
 
-Controls how aggressively JAWS2 accesses memory, directly affecting CPU usage and memory bus activity:
+Controls how aggressively JAWS accesses memory, directly affecting CPU usage and memory bus activity:
 
 - **Level 1-3 (Light)**: Minimal memory access, just enough to prevent swapping
   - Low CPU usage (5-15%)
@@ -158,7 +158,7 @@ Default: 5 (Moderate)
 
 ### Static Mode (-static)
 
-By default, JAWS2 runs in dynamic mode with active memory access patterns. Static mode:
+By default, JAWS runs in dynamic mode with active memory access patterns. Static mode:
 
 - Creates and locks memory but minimizes active access
 - Still performs some background access to prevent swapping
@@ -167,7 +167,7 @@ By default, JAWS2 runs in dynamic mode with active memory access patterns. Stati
 
 ## Memory Locking Details
 
-JAWS2 uses multiple approaches to ensure allocated memory remains in physical RAM:
+JAWS uses multiple approaches to ensure allocated memory remains in physical RAM:
 
 1. **mlockall() System Call**: Instructs the kernel to lock all current and future memory allocations
 2. **Memory Touching**: Writes to every page to ensure it's mapped into physical memory
@@ -178,7 +178,7 @@ JAWS2 uses multiple approaches to ensure allocated memory remains in physical RA
 
 ## System Restoration
 
-After running JAWS2, use the automatically generated restore script to reset your system:
+After running JAWS, use the automatically generated restore script to reset your system:
 
 ```bash
 sudo /usr/local/bin/restore_jaws_settings
@@ -197,26 +197,26 @@ Both methods restore:
 
 ## Monitoring
 
-While JAWS2 is running, you can monitor its impact using standard Linux tools:
+While JAWS is running, you can monitor its impact using standard Linux tools:
 
 ```bash
 # Monitor memory usage
 free -m
 
 # Check if memory is being swapped
-cat /proc/$(pgrep -f jaws2.py)/status | grep VmSwap
+cat /proc/$(pgrep -f jaws.py)/status | grep VmSwap
 
 # Monitor overall system performance
 vmstat 5
 ```
 
-JAWS2 also reports its own memory utilization and CPU usage periodically during execution.
+JAWS also reports its own memory utilization and CPU usage periodically during execution.
 
 ## Troubleshooting
 
 ### Memory Allocation Failures
 
-If JAWS2 fails to allocate memory:
+If JAWS fails to allocate memory:
 
 1. Try reducing the percentage (-low instead of -mid or -high)
 2. Use smaller chunk sizes (-chunk=50MB)
@@ -248,7 +248,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Acknowledgments
 
-JAWS2 was developed to assist with hardware testing and memory subsystem analysis.
+JAWS was developed to assist with hardware testing and memory subsystem analysis.
 
 ## Maintainer
 
