@@ -15,7 +15,7 @@ Unlike simple memory allocators, JAWS ensures memory remains resident in physica
 
 ## Features
 
-- **Precise Memory Allocation**: Request exact percentages of system memory (30%, 50%, 75%)
+- **Precise Memory Allocation**: Request exact percentages of system memory
 - **Memory Locking**: Prevents the OS from swapping allocated memory to disk
 - **Customizable Chunk Size**: Control allocation granularity for reliability vs. speed
 - **Adjustable Access Intensity**: Fine-tune memory access patterns from light to extreme
@@ -79,6 +79,7 @@ JAWS supports the following options:
 - `-low`: Consume 30% of total system RAM
 - `-mid`: Consume 50% of total system RAM
 - `-high`: Consume 75% of total system RAM
+- `-percent PCT`: Consume a custom percentage (1-95%) of total system RAM
 
 #### Memory Access Options
 
@@ -98,19 +99,29 @@ sudo ./setup_for_jaws.sh -high -chunk=1GB -intensity=8
 # Consume 50% of RAM with a static buffer (minimal CPU usage)
 sudo ./setup_for_jaws.sh -mid -static
 
-# Run directly (not recommended - skips system configurations)
-sudo ./jaws.py -mid -chunk=512MB -intensity=7
+# Consume a custom 42% of RAM with moderate intensity
+sudo ./setup_for_jaws.sh -percent 42 -intensity=6
+
+# Consume a custom 20% of RAM with large chunks
+sudo ./jaws.py -percent 20 -chunk=512MB
 ```
 
 ## Understanding JAWS Options
 
-### Memory Percentage (-low, -mid, -high)
+### Memory Percentage (-low, -mid, -high, -percent)
 
 These options control what percentage of your total system RAM JAWS will allocate and lock:
 
 - `-low`: 30% - Useful for light testing without significantly impacting system performance
 - `-mid`: 50% - Balanced option for most testing scenarios
 - `-high`: 75% - Heavy memory pressure, may impact other applications
+- `-percent PCT`: Specify a custom percentage from 1% to 95% of system memory
+
+The `-percent` option gives you precise control over memory consumption. For example:
+```bash
+sudo ./jaws.py -percent 42
+```
+This will consume exactly 42% of your system's RAM.
 
 ### Chunk Size (-chunk)
 
@@ -218,7 +229,7 @@ JAWS also reports its own memory utilization and CPU usage periodically during e
 
 If JAWS fails to allocate memory:
 
-1. Try reducing the percentage (-low instead of -mid or -high)
+1. Try reducing the percentage (-low instead of -mid or -high, or a lower custom percentage)
 2. Use smaller chunk sizes (-chunk=50MB)
 3. Check available memory with `free -m`
 
