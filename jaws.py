@@ -428,9 +428,15 @@ def main():
 
     parser = argparse.ArgumentParser(description="Jaws: Memory Consumption Tool",
                                      formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("-low", action="store_true", help="Consume 30% of total RAM")
-    parser.add_argument("-mid", action="store_true", help="Consume 50% of total RAM")
-    parser.add_argument("-high", action="store_true", help="Consume 75% of total RAM")
+    # Memory percentage options group
+    mem_group = parser.add_mutually_exclusive_group(required=True)
+    mem_group.add_argument("-low", action="store_true", help="Consume 30% of total RAM")
+    mem_group.add_argument("-mid", action="store_true", help="Consume 50% of total RAM")
+    mem_group.add_argument("-high", action="store_true", help="Consume 75% of total RAM")
+    mem_group.add_argument("-percent", type=int, metavar="PCT",
+                        help="Specify a custom percentage of memory to consume (1-95)")
+
+    # Other options
     parser.add_argument("-static", action="store_true", help="Create a static buffer (no random access)")
     parser.add_argument("-chunk", type=str, default="100MB",
                         help="Chunk size for memory allocation (e.g., 100MB, 1GB). Default: 100MB")
@@ -439,19 +445,21 @@ def main():
 
     args = parser.parse_args()
 
-    if not (args.low or args.mid or args.high):
-        print("Error: Must specify one of -low, -mid, or -high.")
-        parser.print_help()
-        sys.exit(1)
-
-    if args.low:
+    # Determine memory percentage
+    if args.percent is not None:
+        if args.percent < 1 or args.percent > 95:
+            print(f"Error: Custom percentage {args.percent}% is outside the valid range (1-95).")
+            sys.exit(1)
+        percentage = args.percent
+        print(f"Using custom memory percentage: {percentage}%")
+    elif args.low:
         percentage = 30
     elif args.mid:
         percentage = 50
     elif args.high:
         percentage = 75
-    else: # Should never happen, but good practice
-        print("Error: Invalid memory option.")
+    else:  # Should never happen due to required=True in arg group
+        print("Error: Must specify memory percentage.")
         sys.exit(1)
 
     # Parse chunk size
