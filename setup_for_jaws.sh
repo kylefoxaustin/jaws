@@ -142,10 +142,28 @@ fi
 echo "System configured for optimal memory locking."
 echo "To restore original settings, run: sudo $RESTORE_LINK"
 
-# Run jaws with unlimited locked memory if arguments are provided
-if [ $# -gt 0 ]; then
-    echo "Running jaws with arguments: $@"
-    exec python3 ./jaws.py "$@"
+# Process script arguments to handle the -percent option
+JAWS_ARGS=()
+CUSTOM_PERCENT=false
+PERCENT_VALUE=0
+
+for arg in "$@"; do
+  # Check if this is a percent argument
+  if [[ "$arg" =~ ^-percent$ ]]; then
+    CUSTOM_PERCENT=true
+  elif [[ "$CUSTOM_PERCENT" == true && "$arg" =~ ^[0-9]+$ ]]; then
+    PERCENT_VALUE="$arg"
+    CUSTOM_PERCENT=false
+    JAWS_ARGS+=("-percent" "$arg")
+  else
+    JAWS_ARGS+=("$arg")
+  fi
+done
+
+# Run jaws with the arguments
+if [ ${#JAWS_ARGS[@]} -gt 0 ]; then
+    echo "Running jaws with arguments: ${JAWS_ARGS[@]}"
+    exec python3 ./jaws.py "${JAWS_ARGS[@]}"
 else
-    echo "Setup complete. You can now run jaws2.py with your preferred arguments."
+    echo "Setup complete. You can now run jaws.py with your preferred arguments."
 fi
