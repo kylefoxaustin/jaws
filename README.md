@@ -45,7 +45,7 @@ pip install psutil
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/jaws.git
+git clone https://github.com/kylefoxaustin/jaws.git
 cd jaws
 ```
 
