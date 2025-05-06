@@ -90,17 +90,17 @@ JAWS supports the following options:
 ### Examples
 
 ```bash
-# Consume 30% of RAM with default settings
+# Setup Jaws paramters and run jaws.py-- Consume 30% of RAM with default settings
 sudo ./setup_for_jaws.sh -low
 
 # Consume 75% of RAM with large chunks and high intensity
-sudo ./setup_for_jaws.sh -high -chunk=1GB -intensity=8
+sudo ./jaws.py -high -chunk=1GB -intensity=8
 
 # Consume 50% of RAM with a static buffer (minimal CPU usage)
-sudo ./setup_for_jaws.sh -mid -static
+sudo ./jaws.py -mid -static
 
 # Consume a custom 42% of RAM with moderate intensity
-sudo ./setup_for_jaws.sh -percent 42 -intensity=6
+sudo ./jaws.py -percent 42 -intensity=6
 
 # Consume a custom 20% of RAM with large chunks
 sudo ./jaws.py -percent 20 -chunk=512MB
