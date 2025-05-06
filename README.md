@@ -58,8 +58,12 @@ chmod +x jaws.py setup_for_jaws.sh deconstruct_jaws.sh
 ## Usage
 
 JAWS requires elevated privileges to lock memory and adjust system settings. The provided setup script handles all necessary configurations.
+However on your system you may find that those elevated privileges are not possible.   If that turns out to be the case or you simply
+do not want to make those changes, you can attempt to run ./jaws.py directly without using the setup_for_jaws.sh script.
+This may be fine but you may find that the OS is swapping your memory out.   You can check this by simply looking at the swap file size.
+If it remains 0KB then the memory is good. 
 
-### Basic Usage
+### Basic Usage using ./setup_for_jaws.sh
 
 ```bash
 sudo ./setup_for_jaws.sh -mid
@@ -69,6 +73,17 @@ This command:
 1. Creates a backup of your system settings
 2. Configures memory locking parameters
 3. Runs JAWS to consume 50% of system memory
+4. NOTE: after setup, you do NOT need to run setup_for_jaws.sh each time.  Just run jaws.py.
+
+### Basic Usage using ./jaws.py without setup 
+
+```bash
+sudo ./jaws.py -mid
+```
+
+This command:
+
+1. Runs JAWS to consume 50% of system memory
 
 ### Command Line Options
 
