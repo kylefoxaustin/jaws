@@ -315,3 +315,11 @@ The codebase is organized into these main components:
 - Cleanup and restoration (deconstruct_jaws.sh)
 
 Any modifications should maintain separation between these concerns.
+
+## Author
+
+**Kyle Fox** - [GitHub](https://github.com/kylefoxaustin)
+
+## License
+
+MIT License - Use freely for personal and commercial projects.
