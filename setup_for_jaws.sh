@@ -140,30 +140,16 @@ else
 fi
 
 echo "System configured for optimal memory locking."
+echo "NOTE: This added 'memlock unlimited' for ALL users to"
+echo "      /etc/security/limits.conf (a persistent, system-wide change)."
 echo "To restore original settings, run: sudo $RESTORE_LINK"
 
-# Process script arguments to handle the -percent option
-JAWS_ARGS=()
-CUSTOM_PERCENT=false
-PERCENT_VALUE=0
-
-for arg in "$@"; do
-  # Check if this is a percent argument
-  if [[ "$arg" =~ ^-percent$ ]]; then
-    CUSTOM_PERCENT=true
-  elif [[ "$CUSTOM_PERCENT" == true && "$arg" =~ ^[0-9]+$ ]]; then
-    PERCENT_VALUE="$arg"
-    CUSTOM_PERCENT=false
-    JAWS_ARGS+=("-percent" "$arg")
-  else
-    JAWS_ARGS+=("$arg")
-  fi
-done
-
-# Run jaws with the arguments
-if [ ${#JAWS_ARGS[@]} -gt 0 ]; then
-    echo "Running jaws with arguments: ${JAWS_ARGS[@]}"
-    exec python3 ./jaws.py "${JAWS_ARGS[@]}"
+# Forward all remaining arguments straight through to jaws.py. JAWS v2 uses
+# standard GNU-style flags (e.g. --mid, --percent 42, --chunk 1GB), so no
+# special-case parsing is needed here.
+if [ "$#" -gt 0 ]; then
+    echo "Running jaws with arguments: $*"
+    exec python3 ./jaws.py "$@"
 else
     echo "Setup complete. You can now run jaws.py with your preferred arguments."
 fi

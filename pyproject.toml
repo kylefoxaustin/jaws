@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jaws-memsim"
+version = "2.0.0"
+description = "Just Another Working Simulator - precise memory consumption and bandwidth simulation for Linux"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "Kyle Fox" }]
+keywords = ["memory", "ram", "mlock", "stress-test", "bandwidth", "simulation", "linux"]
+dependencies = [
+    "psutil>=5.9",
+    "numpy>=1.21",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: System :: Benchmark",
+    "Topic :: System :: Hardware",
+]
+
+[project.urls]
+Homepage = "https://github.com/kylefoxaustin/jaws"
+
+[project.scripts]
+jaws = "jaws:main"
+
+[tool.setuptools]
+py-modules = ["jaws"]

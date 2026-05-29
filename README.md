@@ -34,12 +34,13 @@ Unlike simple memory allocators, JAWS ensures memory remains resident in physica
 ### Required Python Packages
 
 - `psutil`: For system memory information
-- Standard library packages: `array`, `ctypes`, `threading`, etc.
+- `numpy`: For memory buffer allocation and access
+- Standard library packages: `ctypes`, `threading`, etc.
 
-Install the required package:
+Install the required packages:
 
 ```bash
-pip install psutil
+pip install psutil numpy
 ```
 
 ### Clone the Repository
@@ -66,7 +67,7 @@ If it remains 0KB then the memory is good.
 ### Basic Usage using ./setup_for_jaws.sh
 
 ```bash
-sudo ./setup_for_jaws.sh -mid
+sudo ./setup_for_jaws.sh --mid
 ```
 
 This command:
@@ -78,7 +79,7 @@ This command:
 ### Basic Usage using ./jaws.py without setup 
 
 ```bash
-sudo ./jaws.py -mid
+sudo ./jaws.py --mid
 ```
 
 This command:
@@ -91,54 +92,54 @@ JAWS supports the following options:
 
 #### Memory Percentage Options (Required - choose one)
 
-- `-low`: Consume 30% of total system RAM
-- `-mid`: Consume 50% of total system RAM
-- `-high`: Consume 75% of total system RAM
-- `-percent PCT`: Consume a custom percentage (1-95%) of total system RAM
+- `--low`: Consume 30% of total system RAM
+- `--mid`: Consume 50% of total system RAM
+- `--high`: Consume 75% of total system RAM
+- `--percent PCT`: Consume a custom percentage (1-95%) of total system RAM
 
 #### Memory Access Options
 
-- `-static`: Create a static buffer without random access patterns (default: off)
-- `-chunk=SIZE`: Specify chunk size for memory allocation (e.g., 100MB, 1GB, etc.)
-- `-intensity=LEVEL`: Set memory access intensity from 1-10 (default: 5)
+- `--static`: Create a static buffer without random access patterns (default: off)
+- `--chunk SIZE`: Specify chunk size for memory allocation (e.g., 100MB, 1GB, etc.)
+- `--intensity LEVEL`: Set memory access intensity from 1-10 (default: 5)
 
 ### Examples
 
 ```bash
 # Setup Jaws paramters and run jaws.py-- Consume 30% of RAM with default settings
-sudo ./setup_for_jaws.sh -low
+sudo ./setup_for_jaws.sh --low
 
 # Consume 75% of RAM with large chunks and high intensity
-sudo ./jaws.py -high -chunk=1GB -intensity=8
+sudo ./jaws.py --high --chunk 1GB --intensity 8
 
 # Consume 50% of RAM with a static buffer (minimal CPU usage)
-sudo ./jaws.py -mid -static
+sudo ./jaws.py --mid --static
 
 # Consume a custom 42% of RAM with moderate intensity
-sudo ./jaws.py -percent 42 -intensity=6
+sudo ./jaws.py --percent 42 --intensity 6
 
 # Consume a custom 20% of RAM with large chunks
-sudo ./jaws.py -percent 20 -chunk=512MB
+sudo ./jaws.py --percent 20 --chunk 512MB
 ```
 
 ## Understanding JAWS Options
 
-### Memory Percentage (-low, -mid, -high, -percent)
+### Memory Percentage (--low, --mid, --high, --percent)
 
 These options control what percentage of your total system RAM JAWS will allocate and lock:
 
-- `-low`: 30% - Useful for light testing without significantly impacting system performance
-- `-mid`: 50% - Balanced option for most testing scenarios
-- `-high`: 75% - Heavy memory pressure, may impact other applications
-- `-percent PCT`: Specify a custom percentage from 1% to 95% of system memory
+- `--low`: 30% - Useful for light testing without significantly impacting system performance
+- `--mid`: 50% - Balanced option for most testing scenarios
+- `--high`: 75% - Heavy memory pressure, may impact other applications
+- `--percent PCT`: Specify a custom percentage from 1% to 95% of system memory
 
-The `-percent` option gives you precise control over memory consumption. For example:
+The `--percent` option gives you precise control over memory consumption. For example:
 ```bash
-sudo ./jaws.py -percent 42
+sudo ./jaws.py --percent 42
 ```
 This will consume exactly 42% of your system's RAM.
 
-### Chunk Size (-chunk)
+### Chunk Size (--chunk)
 
 Controls how memory is allocated internally:
 
@@ -149,15 +150,15 @@ The optimal chunk size depends on your system and total allocation size. For lar
 
 Syntax:
 ```
--chunk=SIZE
+--chunk SIZE
 ```
 Where SIZE can be specified as:
-- A number in MB: `-chunk=100`
-- With units: `-chunk=1GB`, `-chunk=512MB`
+- A number in MB: `--chunk 100`
+- With units: `--chunk 1GB`, `--chunk 512MB`
 
 Default: 100MB
 
-### Intensity Level (-intensity)
+### Intensity Level (--intensity)
 
 Controls how aggressively JAWS accesses memory, directly affecting CPU usage and memory bus activity:
 
@@ -182,7 +183,7 @@ Controls how aggressively JAWS accesses memory, directly affecting CPU usage and
 
 Default: 5 (Moderate)
 
-### Static Mode (-static)
+### Static Mode (--static)
 
 By default, JAWS runs in dynamic mode with active memory access patterns. Static mode:
 
@@ -195,7 +196,7 @@ By default, JAWS runs in dynamic mode with active memory access patterns. Static
 
 JAWS uses multiple approaches to ensure allocated memory remains in physical RAM:
 
-1. **mlockall() System Call**: Instructs the kernel to lock all current and future memory allocations
+1. **mlock() System Call**: Locks each allocated buffer into physical memory
 2. **Memory Touching**: Writes to every page to ensure it's mapped into physical memory
 3. **Active Access Patterns**: Continuously accesses memory to prevent the kernel from considering it inactive
 4. **Process Priority**: Sets high process priority to reduce likelihood of swapping
@@ -244,8 +245,8 @@ JAWS also reports its own memory utilization and CPU usage periodically during e
 
 If JAWS fails to allocate memory:
 
-1. Try reducing the percentage (-low instead of -mid or -high, or a lower custom percentage)
-2. Use smaller chunk sizes (-chunk=50MB)
+1. Try reducing the percentage (--low instead of --mid or --high, or a lower custom percentage)
+2. Use smaller chunk sizes (--chunk 50MB)
 3. Check available memory with `free -m`
 
 ### Memory Locking Failures
@@ -260,8 +261,8 @@ If memory locking warnings appear:
 
 If the system becomes unresponsive with high intensity levels:
 
-1. Reduce intensity level (-intensity=3)
-2. Use the -static option to minimize CPU usage
+1. Reduce intensity level (--intensity 3)
+2. Use the --static option to minimize CPU usage
 3. Reduce the percentage of memory being allocated
 
 ## License
