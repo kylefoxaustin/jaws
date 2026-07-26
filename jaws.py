@@ -7,8 +7,13 @@ allocates and locks a precise percentage of system RAM in physical memory and
 generates customizable, multi-core memory access patterns.
 
 v2 highlights vs v1:
-  * numpy-backed buffers: zero allocation overshoot (v1 transiently spiked ~9x
-    the target size while building a temporary Python list per chunk).
+  * numpy-backed buffers: no allocation overshoot. v1 built a temporary Python
+    list per chunk, costing ~8x the CHUNK size in transient RAM on top of the
+    buffer itself. That excess is independent of the target, so the ratio to
+    the target depends entirely on chunk:target -- measured on a 96 GB host, a
+    963 MB request cost 1.79x at v1's default 100 MB chunk and 9.02x at a 1 GB
+    chunk, while a 4.8 GB request cost 1.17x at the default chunk. v2's total
+    error is a constant ~29 MB regardless of target or chunk size.
   * Vectorized access engine that releases the GIL, so worker threads achieve
     real multi-core memory bandwidth instead of time-slicing one core.
   * Genuinely low-CPU --static mode.
@@ -108,8 +113,13 @@ class Jaws:
 
         NOTE: we deliberately lock each buffer individually with mlock() rather
         than mlockall(MCL_FUTURE). mlockall locks the *entire* address space,
-        including sparse reserved mappings, which force-populates 2-3x the
-        requested RAM and destroys the precision this tool exists to provide.
+        including sparse reserved mappings, so it force-populates the whole
+        process footprint -- measured as VmLck == VmSize, a constant ~1383 MB
+        over target on this interpreter. Being a constant and not a multiple,
+        it costs 2.37x at a 963 MB request but only 1.27x at a 4.8 GB one, so
+        it hurts small requests worst. Per-buffer mlock() locks exactly the
+        requested bytes (+0.1 MB measured), keeping the precision this tool
+        exists to provide.
         """
         num_chunks = (self.target_bytes + self.chunk_size - 1) // self.chunk_size
         print(
