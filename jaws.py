@@ -263,11 +263,27 @@ class Jaws:
         return None
 
     def residency_check(self):
+        """Report residency, and never let '0 swapped' imply 'cannot be swapped'.
+
+        VmSwap == 0 only means nothing has been evicted YET. Whether it CAN be
+        evicted is decided by how much we actually mlock()ed, which is a
+        different question -- so an unlocked buffer gets a warning, not a tick.
+        """
         swap_kb = self._vm_swap_kb()
+        unlocked = self.allocated_bytes - self.locked_bytes
         if swap_kb is None:
             print("VmSwap check: unavailable.")
+        elif swap_kb == 0 and unlocked > 0:
+            print(
+                f"VmSwap check: 0 KB swapped — but only "
+                f"{self.locked_bytes / (1024 * 1024):.2f} MB of "
+                f"{self.allocated_bytes / (1024 * 1024):.2f} MB is locked, so "
+                f"{unlocked / (1024 * 1024):.2f} MB is resident but SWAPPABLE "
+                "under memory pressure. Not swapped yet is not the same as "
+                "cannot be swapped."
+            )
         elif swap_kb == 0:
-            print("VmSwap check: 0 KB swapped — all memory resident. ✓")
+            print("VmSwap check: 0 KB swapped — all memory resident and locked. ✓")
         else:
             print(
                 f"VmSwap check: {swap_kb / 1024:.2f} MB swapped out — memory "
